@@ -1,7 +1,5 @@
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.time.Instant;
 import java.util.*;
@@ -51,9 +49,9 @@ public class DocumentManager {
             Instant createdAt = entry.getValue().getCreated();
             Instant from = request.getCreatedFrom(), to = request.getCreatedTo();
 
-            if(isAnyPrefixesStartWithTitle(title, request.getTitlePrefixes())           ||
-               isAnyContentsContainsContent(content, request.getContainsContents())     ||
-               isAnyAuthorsIdsEqualsToAuthorId(author.getId(), request.getAuthorIds())  ||
+            if(isAnyPrefixesStartWithTitle(title, request.getTitlePrefixes())           &&
+               isAnyContentsContainsContent(content, request.getContainsContents())     &&
+               isAnyAuthorsIdsEqualsToAuthorId(author.getId(), request.getAuthorIds())  &&
                isCreatedDateOfFileBetweenFromAndTo(createdAt, from, to)) {
                 result.add(entry.getValue());
             }

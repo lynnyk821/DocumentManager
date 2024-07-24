@@ -29,7 +29,10 @@ public class DocumentManager {
         if(document.getId() == null) {
             document.setId(UUID.randomUUID().toString());
         }
-        return storage.put(document.getId(), document);
+
+        storage.put(document.getId(), document);
+
+        return document;
     }
 
     /**
@@ -55,23 +58,35 @@ public class DocumentManager {
                 result.add(entry.getValue());
             }
         }
+
         return result;
     }
 
     private Boolean isAnyPrefixesStartWithTitle(String title, List<String> titlePrefixes) {
-        return title != null && titlePrefixes.stream().anyMatch(title::startsWith);
+        if(title == null || titlePrefixes == null) {
+            return false;
+        }
+        return titlePrefixes.stream().anyMatch(title::startsWith);
     }
 
     private Boolean isAnyContentsContainsContent(String content, List<String> containsContents) {
-        return content != null && containsContents.stream().anyMatch(content::contains);
+        if(content == null || containsContents == null) {
+            return false;
+        }
+        return containsContents.stream().anyMatch(content::contains);
     }
 
     private Boolean isAnyAuthorsIdsEqualsToAuthorId(String thisAuthorId, List<String> authorIds) {
-        return thisAuthorId != null && authorIds.stream().anyMatch(thisAuthorId::equals);
+        if(thisAuthorId == null || authorIds == null) {
+            return false;
+        }
+        return authorIds.stream().anyMatch(thisAuthorId::equals);
     }
 
-    private Boolean isCreatedDateOfFileBetweenFromAndTo(Instant createAt, Instant to, Instant from) {
-        return from != null && to != null && createAt.isAfter(from) && createAt.isBefore(to);
+    private Boolean isCreatedDateOfFileBetweenFromAndTo(Instant created, Instant to, Instant from) {
+        if (created == null) return false;
+        if (from != null && created.isBefore(from)) return false;
+        return to == null || !created.isAfter(to);
     }
 
     /**

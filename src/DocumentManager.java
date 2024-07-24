@@ -110,11 +110,4 @@ public class DocumentManager {
         private String id;
         private String name;
     }
-
-    @Builder
-    @Getter @Setter
-    private static class DateBorders {
-        private Instant to;
-        private Instant from;
-    }
 }

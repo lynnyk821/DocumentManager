@@ -41,29 +41,26 @@ public class DocumentManager {
      */
     public List<Document> search(SearchRequest request) {
         List<Document> result = new ArrayList<>();
-        for(Map.Entry<String, Document> entry : storage.entrySet()) {
-            String title = entry.getValue().getTitle();
-            String content = entry.getValue().getContent();
-            Author author = entry.getValue().getAuthor();
-
-            Instant createdAt = entry.getValue().getCreated();
-            Instant from = request.getCreatedFrom(), to = request.getCreatedTo();
-
-            if(isAnyPrefixesStartWithTitle(title, request.getTitlePrefixes())           &&
-               isAnyContentsContainsContent(content, request.getContainsContents())     &&
-               isAnyAuthorsIdsEqualsToAuthorId(author.getId(), request.getAuthorIds())  &&
-               isCreatedDateOfFileBetweenFromAndTo(createdAt, from, to)) {
-                result.add(entry.getValue());
+        for(Document document : storage.values()) {
+            if(matchesSearchRequest(document, request)) {
+                result.add(document);
             }
         }
-
         return result;
+    }
+
+    private Boolean matchesSearchRequest(Document document, SearchRequest request) {
+        return isAnyPrefixesStartWithTitle(document.getTitle(), request.getTitlePrefixes())                                    &&
+               isAnyContentsContainsContent(document.getContent(), request.getContainsContents())                              &&
+               isAnyAuthorsIdsEqualsToAuthorId(document.getAuthor().getId(), request.getAuthorIds())                           &&
+               isCreatedDateOfFileBetweenFromAndTo(document.getCreated(), request.getCreatedFrom(), request.getCreatedTo());
     }
 
     private Boolean isAnyPrefixesStartWithTitle(String title, List<String> titlePrefixes) {
         if(title == null || titlePrefixes == null) {
             return false;
         }
+
         return titlePrefixes.stream().anyMatch(title::startsWith);
     }
 
@@ -71,6 +68,7 @@ public class DocumentManager {
         if(content == null || containsContents == null) {
             return false;
         }
+
         return containsContents.stream().anyMatch(content::contains);
     }
 
@@ -78,6 +76,7 @@ public class DocumentManager {
         if(thisAuthorId == null || authorIds == null) {
             return false;
         }
+
         return authorIds.stream().anyMatch(thisAuthorId::equals);
     }
 
